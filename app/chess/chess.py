@@ -21,6 +21,10 @@ from piece import Queen
 
 # ///////////////////////////////////////////////////
 
+LOG_FILENAME = 'chess.log'
+logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
+logging.debug('')
+
 
 class Chess(object):
     """ Chess class """
@@ -51,7 +55,7 @@ class Chess(object):
     def populate(self, pieces, chessboard):
         """
         Initiate the Chessboard and starts the game
-
+        
         Keyword arguments:
         pieces -- the pieces that are not put on the chessboard
         chessboard -- the chessboard
@@ -59,12 +63,11 @@ class Chess(object):
         symbols_list = list()
 
         waiting_pieces = copy(pieces)
-        print "Start Populate with parameters : ", pieces, chessboard
-        print '#######################################################'
-        print "Chessboard.allocated_squares -------------------"
-        self.print_chessboard_logs(chessboard.allocated_squares)
-        print "chessboard.empty_squares -------------------"
-        self.print_chessboard_logs(chessboard.empty_squares)
+        logging.debug("Start Populate")
+        logging.debug("with parameters:{0}{1}".format(pieces, chessboard))
+        logging.debug('#####################################################')
+        chessboard.print_logs('')
+        logging.debug('#####################################################')
 
         for p in pieces:
             logging.debug("--------------------------------")
@@ -116,14 +119,6 @@ class Chess(object):
                     logging.debug("---------------END_S--------------------*")
             logging.debug("----------------END_P----------------------*")
 
-    def print_chessboard_logs(self, listsquare):
-        for i in listsquare:
-            if str(i.__class__) == "chess.chess.Square":
-                print i.coordinates(),
-            else:
-                print i.pos(),
-        print
-
 
 class Chessboard():
     """
@@ -134,10 +129,10 @@ class Chessboard():
     def __init__(self, x, y):
         """
         Attributes:
-        `board`               --   All squares that formed the Chessboard.
-        `allocated_squares`   --   Squares allocated by pieces and their attack area.
-        `allocated_pieces`    --   The piece put on the ChessBoard.
-        `empty_squares`        --   The current empty squares in the Chessboard
+        `board`                --        All squares that formed the Chessboard.
+        `allocated_squares`    --        Squares allocated by pieces and their attack area.
+        `allocated_pieces`     --        the piece put on the ChessBoard.
+        `empty_squares`        --        The current empty squares in the Chessboard
         """
         list_of_board = list(product(range(1, x+1), range(1, y+1)))
         self.board = [Square(x[0], x[1]) for x in list_of_board]
@@ -195,6 +190,26 @@ class Chessboard():
                     test = False
                     break
         return test
+
+    def print_logs(self, msg=''):
+        """
+        print message logs about the parameters of
+        the current Chessboard
+        """
+        logging.debug('###########################################')
+        logging.debug(" {0}chessboard allocated_squares:".format(msg))
+        self.__print_squares(self.allocated_squares)
+        logging.debug("{0} chessboard empty_squares:".format(msg))
+        self.__print_squares(self.empty_squares)
+        logging.debug("{0} chessboard allocated Pieces:".format(msg))
+        self.__print_squares(self.allocated_pieces)
+
+    def __print_squares(self, list_input):
+        if list_input and str(list_input[0].__class__) == "chess.pep.Square":
+            logging.debug([i.coordinates()for i in list_input]),
+        else:
+            logging.debug([i.pos()for i in list_input]),
+        print
 
 
 class Square():
