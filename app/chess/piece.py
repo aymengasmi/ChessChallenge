@@ -1,20 +1,34 @@
+# -*- coding: utf-8 -*-
+
+"""
+`piece` module is responsible for creating the pieces and their parameters
+
+"""
+
+
+# ///////////////////////////////////////////////////
+# Python packages
 from math import hypot
+from math import sqrt
 
 
 class ChessPiece(object):
-
+    """
+    Define a piece of a chess game
+    """
     def __init__(self):
         self.x = 0
         self.y = 0
         self.symbol = ''
 
-    # Checks piece can attack the specified position
     def deplace_piece(self, square):
         self.x = square.x
         self.y = square.y
 
-    # return the character representation of this chess piece
     def get_symbol(self):
+        """
+        return the character that represent the piece
+        """
         return self.symbol
 
     def set_column(self, column):
@@ -37,28 +51,26 @@ class ChessPiece(object):
 
 
 class King(ChessPiece):
-
+    """The king piece of a chess game """
     def __init__(self):
         ChessPiece.__init__(self)
         self.symbol = 'K'
-
         print '>>> Buil king piece'
 
     def check_attack(self, pos):
         dist = hypot(self.x - pos.x, self.y - pos.y)
-        if dist <= 1:
+        if dist <= sqrt(2):
             return True
         else:
             return False
 
 
 class Queen(ChessPiece):
-
+    """ The Queen piece of a chess game """
     def __init__(self):
         ChessPiece.__init__(self)
         self.symbol = 'Q'
-
         print '>>> Buil Queen piece'
 
     def check_attack(self, pos):
-        return True
+        return False
