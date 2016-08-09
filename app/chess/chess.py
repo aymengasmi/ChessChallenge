@@ -17,6 +17,9 @@ import logging
 # My modules
 from piece import King
 from piece import Queen
+from piece import Rook
+from piece import Bishop
+from piece import Knight
 # ---------------------------------------------------
 
 # ///////////////////////////////////////////////////
@@ -44,9 +47,15 @@ class Chess(object):
         """ Create pieces """
         kings_list = [King() for _ in xrange(pieces_dict['King'])]
         queens_list = [Queen() for _ in xrange(pieces_dict['Queen'])]
+        rook_list = [Rook() for _ in xrange(pieces_dict['Rook'])]
+        bishop_list = [Bishop() for _ in xrange(pieces_dict['Bishop'])]
+        knight_list = [Knight() for _ in xrange(pieces_dict['Knight'])]
         pieces = list()
         pieces.extend(kings_list)
         pieces.extend(queens_list)
+        pieces.extend(rook_list)
+        pieces.extend(bishop_list)
+        pieces.extend(knight_list)
         return pieces
 
     def print_solution_chessboard(self):
