@@ -29,6 +29,7 @@ logging.debug('')
 class Chess(object):
     """ Chess class """
     def __init__(self, params):
+        self.chess_output = []
         self.solutions = 0
         self.width = params[0]
         self.height = params[1]
@@ -48,14 +49,18 @@ class Chess(object):
         pieces.extend(queens_list)
         return pieces
 
+    def print_solution_chessboard(self):
+        pass
+
     def run_game(self):
         """ Initiate the Chessboard and starts the game """
         self.populate(self.pieces, self.chessboard)
+        self.print_solution_chessboard()
 
     def populate(self, pieces, chessboard):
         """
         Initiate the Chessboard and starts the game
-        
+
         Keyword arguments:
         pieces -- the pieces that are not put on the chessboard
         chessboard -- the chessboard
@@ -90,12 +95,19 @@ class Chess(object):
                             # Update chesseBoard
                             chessboard.allocated(p)
                             # Check if all pieces are in Board
-                            if len(chessboard.allocated_pieces) == len(self.pieces):
-                                self.solutions += 1
+                            _leng = len(chessboard.allocated_pieces)
+                            if _leng == len(self.pieces):
                                 logging.debug("Solution")
                                 print "---------Possible Solution-----------"
+                                solution_list = []
                                 for i in chessboard.allocated_pieces:
                                     print i.pos(), i.get_symbol()
+                                    solution_list.append(i.pos())
+                                solution_list.sort()
+                                if solution_list not in self.chess_output:
+                                    self.chess_output.append(solution_list)
+                                    self.solutions += 1
+
                                 print "------------------------------"
 
                             else:
@@ -109,7 +121,8 @@ class Chess(object):
                             # Remove the piece from the Chessboard
                             # and range to the next empty square
                             logging.debug("remove from chessboard")
-                            logging.debug("removed piece position:".format(p.pos(), p))
+                            logging.debug("removed piece position:{0}{1}"
+                                          .format(p.pos(), p))
                             chessboard.remove_piece(p)
 
                         else:
@@ -129,10 +142,10 @@ class Chessboard():
     def __init__(self, x, y):
         """
         Attributes:
-        `board`                --        All squares that formed the Chessboard.
-        `allocated_squares`    --        Squares allocated by pieces and their attack area.
-        `allocated_pieces`     --        the piece put on the ChessBoard.
-        `empty_squares`        --        The current empty squares in the Chessboard
+        `board`            -- All squares that formed the Chessboard.
+        `allocated_squares`-- Squares reserved by pieces and their attack area.
+        `allocated_pieces` -- The piece put on the ChessBoard.
+        `empty_squares`    -- The current empty squares in the Chessboard
         """
         list_of_board = list(product(range(1, x+1), range(1, y+1)))
         self.board = [Square(x[0], x[1]) for x in list_of_board]
@@ -205,7 +218,7 @@ class Chessboard():
         self.__print_squares(self.allocated_pieces)
 
     def __print_squares(self, list_input):
-        if list_input and str(list_input[0].__class__) == "chess.pep.Square":
+        if list_input and str(list_input[0].__class__) == "chess.chess.Square":
             logging.debug([i.coordinates()for i in list_input]),
         else:
             logging.debug([i.pos()for i in list_input]),
