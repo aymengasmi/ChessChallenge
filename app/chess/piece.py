@@ -1,47 +1,33 @@
-# -*- coding: utf-8 -*-
-
-"""
-`piece` module is responsible for creating the pieces and their parameters
-
-"""
-
-
-# ///////////////////////////////////////////////////
-# Python packages
-from math import hypot
-from math import sqrt
+from math import hypot, sqrt
 
 
 class ChessPiece(object):
-    """
-    Define a piece of a chess game
-    """
+
     def __init__(self):
         self.x = 0
         self.y = 0
         self.symbol = ''
 
+    # Checks piece can attack the specified position
     def deplace_piece(self, square):
         self.x = square.x
         self.y = square.y
 
+    # return the character representation of this chess piece
     def get_symbol(self):
-        """
-        return the character that represent the piece
-        """
         return self.symbol
 
     def set_column(self, column):
-        self.x = column
+        self.column = column
 
     def get_column(self):
-        return self.x
+        return self.column
 
     def set_row(self, row):
-        self.y = row
+        self.row = row
 
     def get_row(self):
-        return self.y
+        return self.row
 
     def pos(self):
         return(self.x, self.y)
@@ -51,14 +37,15 @@ class ChessPiece(object):
 
 
 class King(ChessPiece):
-    """The king piece of a chess game """
+
     def __init__(self):
         ChessPiece.__init__(self)
         self.symbol = 'K'
-        print '>>> Buil king piece'
+        print '>>> Build King piece'
 
-    def check_attack(self, pos):
-        dist = hypot(self.x - pos.x, self.y - pos.y)
+    def check_attack(self, target):
+        """ check if King object can attack the position pos"""
+        dist = hypot(self.x - target.x, self.y - target.y)
         if dist <= sqrt(2):
             return True
         else:
@@ -66,11 +53,24 @@ class King(ChessPiece):
 
 
 class Queen(ChessPiece):
-    """ The Queen piece of a chess game """
+
     def __init__(self):
         ChessPiece.__init__(self)
         self.symbol = 'Q'
-        print '>>> Buil Queen piece'
+        print '>>> Build Queen piece'
 
-    def check_attack(self, pos):
-        return False
+    def check_attack(self, target):
+        # Will be true if move can be done as Rook or Bishop
+        if self.__check_rook_attack(target) or self.__check_bishop_attack(target):
+            return True
+        else:
+            return False
+
+    def __check_rook_attack(self, target):
+        if self.x == target.x or self.y == target.y:
+            return True
+
+    def __check_bishop_attack(self, target):
+        # Check for non-horizontal/vertical and linear movement
+        if abs(self.y-target.y) == abs(self.x-target.x):
+            return True
