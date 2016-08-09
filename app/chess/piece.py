@@ -1,8 +1,22 @@
-from math import hypot, sqrt
+# -*- coding: utf-8 -*-
+
+"""
+`piece` contains class that represent the pieces that formed a chess game
+"""
+
+
+# ///////////////////////////////////////////////////
+# Python packages
+from math import hypot
+from math import sqrt
+
+# ---------------------------------------------------
+
+# ///////////////////////////////////////////////////
 
 
 class ChessPiece(object):
-
+    """ General chess piece class """
     def __init__(self):
         self.x = 0
         self.y = 0
@@ -37,7 +51,7 @@ class ChessPiece(object):
 
 
 class King(ChessPiece):
-
+    """ King class"""
     def __init__(self):
         ChessPiece.__init__(self)
         self.symbol = 'K'
@@ -53,7 +67,7 @@ class King(ChessPiece):
 
 
 class Queen(ChessPiece):
-
+    """ Queen class """
     def __init__(self):
         ChessPiece.__init__(self)
         self.symbol = 'Q'
@@ -61,16 +75,63 @@ class Queen(ChessPiece):
 
     def check_attack(self, target):
         # Will be true if move can be done as Rook or Bishop
-        if self.__check_rook_attack(target) or self.__check_bishop_attack(target):
+        if self.__rook_attack(target) or self.__bishop_attack(target):
             return True
         else:
             return False
 
-    def __check_rook_attack(self, target):
+    def __bishop_attack(self, target):
+        if abs(self.y-target.y) == abs(self.x-target.x):
+            return True
+
+    def __rook_attack(self, target):
         if self.x == target.x or self.y == target.y:
             return True
 
-    def __check_bishop_attack(self, target):
+
+class Rook(ChessPiece):
+    """ Rook class """
+    def __init__(self):
+        ChessPiece.__init__(self)
+        self.symbol = 'R'
+        print '>>> Build Rook piece'
+
+    def check_attack(self, target):
+        if self.x == target.x or self.y == target.y:
+            return True
+        else:
+            return False
+
+
+class Bishop(ChessPiece):
+    """ Bishop class """
+
+    def __init__(self):
+        ChessPiece.__init__(self)
+        self.symbol = 'B'
+        print '>>> Build Bishop piece'
+
+    def check_attack(self, target):
         # Check for non-horizontal/vertical and linear movement
         if abs(self.y-target.y) == abs(self.x-target.x):
             return True
+        else:
+            return False
+
+
+class Knight(ChessPiece):
+    """ Knight class """
+
+    def __init__(self):
+        ChessPiece.__init__(self)
+        self.symbol = 'N'
+        print '>>> Build Knight piece'
+
+    def check_attack(self, target):
+        if abs(target.x-self.x) == 2 and abs(target.y-self.y) == 1:
+            return True
+        else:
+            if abs(target.x-self.x) == 1 and abs(target.y-self.y) == 2:
+                return True
+            else:
+                return False
