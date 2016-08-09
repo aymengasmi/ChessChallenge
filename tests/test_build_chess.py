@@ -67,7 +67,13 @@ class TestBuildChess(unittest.TestCase):
         self.chess.run_game()
         self.assertEqual(self.chess.solutions == 252, True)
         
-        
+      def test_soution(self):
+        params = [5, 5]
+        pieces = {'King': 1, 'Queen': 1, 'Bishop': 1, 'Rook': 1, 'Knight': 1}
+        params.append(pieces)
+        self.chess = Chess(params)
+        self.chess.run_game()
+        self.assertEqual(self.chess.solutions == 3488, True)
 
 if __name__ == '__main__':
     unittest.main()
