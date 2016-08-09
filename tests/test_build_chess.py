@@ -22,8 +22,10 @@ class TestBuildChess(unittest.TestCase):
     # ///////////////////////////////////////////////////
     def test_build_chess(self):
         """Tests validity of build chessboard"""
-        self.assertEqual(self.chess.pieces_types == ['K', 'K', 'Q'], True)
+        self.chess.pieces_types.sort()
+        self.assertEqual(self.chess.pieces_types == ['B','K', 'K','N', 'Q','R'], True)
         self.assertEqual(self.chess.number_pieces == 6, True)
+    
     
     def test_solution_only_kings(self):
         params = [5, 5]
