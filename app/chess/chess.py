@@ -10,6 +10,7 @@
 from itertools import product
 from copy import copy
 import logging
+import math
 
 # ---------------------------------------------------
 
@@ -36,6 +37,7 @@ class Chess(object):
         self.solutions = 0
         self.width = params[0]
         self.height = params[1]
+        self.dict_pieces = params[2]
         self.number_pieces = reduce(lambda x, y: x+y, params[2].values())
         # Create all pieces objects
         self.pieces = self.__create_pieces(params[2])
@@ -64,6 +66,8 @@ class Chess(object):
     def run_game(self):
         """ Initiate the Chessboard and starts the game """
         self.populate(self.pieces, self.chessboard)
+        duplication = [math.factorial(x) for x in self.dict_pieces.values()]
+        self.solutions = (self.solutions)/reduce(lambda x, y: x*y, duplication)
         self.print_solution_chessboard()
 
     def populate(self, pieces, chessboard):
@@ -74,7 +78,6 @@ class Chess(object):
         pieces -- the pieces that are not put on the chessboard
         chessboard -- the chessboard
         """
-        symbols_list = list()
 
         waiting_pieces = copy(pieces)
         logging.debug("Start Populate")
@@ -82,64 +85,58 @@ class Chess(object):
         logging.debug('#####################################################')
         chessboard.print_logs('')
         logging.debug('#####################################################')
+        p = pieces[0]
+        logging.debug("--------------------------------")
+        logging.debug(">>>>>>>> piece".format(p.pos(), p))
 
-        for p in pieces:
-            logging.debug("--------------------------------")
-            logging.debug(">>>>>>>> piece".format(p.pos(), p))
-            if p.get_symbol() in symbols_list:
-                continue
-            else:
-                symbols_list.append(p.get_symbol())
-                if not chessboard.empty_squares:
-                    continue
+        if not chessboard.empty_squares:
+                pass
+        else:
+            # Check all possible mouvments for a piece
+            for s in copy(chessboard.empty_squares):
+                logging.debug(">>>>square {0}".format(s.coordinates()))
+                # move the piece in the chessboard
+                p.deplace_piece(s)
+                logging.debug(">>>>>>>> piece".format(p.pos(), p))
+
+                if chessboard.can_put_on(p):
+                    # Update chesseBoard
+                    chessboard.allocated(p)
+                    # Check if all pieces are in Board
+                    _leng = len(chessboard.allocated_pieces)
+                    if _leng == len(self.pieces):
+                        logging.debug("Solution")
+                        print "---------Possible Solution-----------"
+                        solution_list = []
+                        for i in chessboard.allocated_pieces:
+                            print i.pos(), i.get_symbol()
+                            solution_list.append(i.pos())
+                        solution_list.sort()
+                        self.chess_output.append(solution_list)
+                        self.solutions += 1
+
+                        print "------------------------------"
+
+                    else:
+                        # fix the piece in the Chessboard
+                        # populate with pieces except in the board
+                        logging.debug("run recursive Populate")
+                        if p in waiting_pieces:
+                            waiting_pieces.remove(p)
+                        self.populate(waiting_pieces, chessboard)
+
+                    # Remove the piece from the Chessboard
+                    # and range to the next empty square
+                    logging.debug("remove from chessboard")
+                    logging.debug("removed piece position:{0}{1}"
+                                  .format(p.pos(), p))
+                    chessboard.remove_piece(p)
+
                 else:
-                    # Check all possible mouvments for a piece
-                    for s in copy(chessboard.empty_squares):
-                        logging.debug(">>>>square {0}".format(s.coordinates()))
-                        # move the piece in the chessboard
-                        p.deplace_piece(s)
-                        logging.debug(">>>>>>>> piece".format(p.pos(), p))
+                    logging.debug("can attack !!")
+                    continue
 
-                        if chessboard.can_put_on(p):
-                            # Update chesseBoard
-                            chessboard.allocated(p)
-                            # Check if all pieces are in Board
-                            _leng = len(chessboard.allocated_pieces)
-                            if _leng == len(self.pieces):
-                                logging.debug("Solution")
-                                print "---------Possible Solution-----------"
-                                solution_list = []
-                                for i in chessboard.allocated_pieces:
-                                    print i.pos(), i.get_symbol()
-                                    solution_list.append(i.pos())
-                                solution_list.sort()
-                                if solution_list not in self.chess_output:
-                                    self.chess_output.append(solution_list)
-                                    self.solutions += 1
-
-                                print "------------------------------"
-
-                            else:
-                                # fix the piece in the Chessboard
-                                # populate with pieces except in the board
-                                logging.debug("run recursive Populate")
-                                if p in waiting_pieces:
-                                    waiting_pieces.remove(p)
-                                self.populate(waiting_pieces, chessboard)
-
-                            # Remove the piece from the Chessboard
-                            # and range to the next empty square
-                            logging.debug("remove from chessboard")
-                            logging.debug("removed piece position:{0}{1}"
-                                          .format(p.pos(), p))
-                            chessboard.remove_piece(p)
-
-                        else:
-                            logging.debug("can attack !!")
-                            continue
-
-                    logging.debug("---------------END_S--------------------*")
-            logging.debug("----------------END_P----------------------*")
+            logging.debug("---------------END_S--------------------*")
 
 
 class Chessboard():
@@ -231,7 +228,6 @@ class Chessboard():
             logging.debug([i.coordinates()for i in list_input]),
         else:
             logging.debug([i.pos()for i in list_input]),
-        print
 
 
 class Square():
