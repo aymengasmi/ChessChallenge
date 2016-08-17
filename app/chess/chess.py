@@ -9,7 +9,7 @@
 # Python packages
 from itertools import product
 from copy import copy
-import math
+# import math
 
 # ---------------------------------------------------
 
@@ -20,6 +20,7 @@ from piece import Queen
 from piece import Rook
 from piece import Bishop
 from piece import Knight
+from piece import ChessPiece
 # ---------------------------------------------------
 
 # ///////////////////////////////////////////////////
@@ -61,12 +62,15 @@ class Chess(object):
         """ Initiate the Chessboard and starts the game """
 
         print "start game.."
-        self.populate(self.pieces, self.chessboard)
-        duplication = [math.factorial(x) for x in self.dict_pieces.values()]
-        self.solutions = (self.solutions)/reduce(lambda x, y: x*y, duplication)
+        previous_piece = ChessPiece()
+        if self.pieces:
+            self.populate(previous_piece, self.pieces, self.chessboard)
+
+        # duplicat = [math.factorial(x) for x in self.dict_pieces.values()]
+        # self.solutions = (self.solutions)/reduce(lambda x, y: x*y, duplicat)
         self.print_solution_chessboard()
 
-    def populate(self, pieces, chessboard):
+    def populate(self, previous_piece, pieces, chessboard):
         """
         Initiate the Chessboard and starts the game
 
@@ -75,36 +79,45 @@ class Chess(object):
         chessboard -- the chessboard
         """
 
-        waiting_pieces = copy(pieces)
-        p = pieces[0]
-        if not chessboard.empty_squares:
-                pass
-        else:
+        remained_pieces = copy(pieces)
+        current_piece = pieces[0]
+
+        if chessboard.empty_squares:
             # Check all possible mouvments for a piece
             for s in copy(chessboard.empty_squares):
                 # move the piece in the chessboard
-                p.deplace_piece(s)
-                if chessboard.can_put_on(p):
+                current_piece.deplace_piece(s)
+                if chessboard.can_put_on(current_piece):
                     # Check if all pieces are in Board
-                    _leng = len(chessboard.allocated_pieces)+1
-                    if _leng == len(self.pieces):
-                        self.solutions += 1
+                    current_piece.squares.append(s)
+                    current_piece.square = s
+                    if not check_duplicate(current_piece, previous_piece):
+                        _leng = len(chessboard.allocated_pieces)+1
+                        if _leng == len(self.pieces):
+                            self.solutions += 1
 
-                    else:
-                        # fix the piece in the Chessboard
-                        # populate with pieces except in the board
-                        if p in waiting_pieces:
-                            waiting_pieces.remove(p)
+                        else:
+                            # fix the piece in the Chessboard
+                            # populate with pieces except in the board
+                            if current_piece in remained_pieces:
+                                remained_pieces.remove(current_piece)
 
-                        chessboard.allocated(p)
+                            chessboard.allocated(current_piece)
 
-                        self.populate(waiting_pieces, chessboard)
+                            self.populate(current_piece, remained_pieces, chessboard)
+                            # Remove the piece from the Chessboard
+                            # and range to the next empty square
+                            chessboard.remove_piece(current_piece)
 
-                    # Remove the piece from the Chessboard
-                    # and range to the next empty square
-                        chessboard.remove_piece(p)
+            current_piece.squares = list()
+            current_piece.square = None
 
 
+def check_duplicate(p1, p2):
+    if p1.symbol == p2.symbol and p1.square in p2.squares:
+        return True
+    else:
+        return False
 
 
 class Chessboard():

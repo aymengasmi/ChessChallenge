@@ -21,6 +21,8 @@ class ChessPiece(object):
         self.x = 0
         self.y = 0
         self.symbol = ''
+        self.square = None
+        self.squares = list()
 
     # Checks piece can attack the specified position
     def deplace_piece(self, square):
@@ -55,7 +57,6 @@ class King(ChessPiece):
     def __init__(self):
         ChessPiece.__init__(self)
         self.symbol = 'K'
-        print '>>> Build King piece'
 
     def check_attack(self, target):
         """ check if King object can attack the position pos"""
@@ -71,7 +72,6 @@ class Queen(ChessPiece):
     def __init__(self):
         ChessPiece.__init__(self)
         self.symbol = 'Q'
-        print '>>> Build Queen piece'
 
     def check_attack(self, target):
         # Will be true if move can be done as Rook or Bishop
@@ -94,7 +94,6 @@ class Rook(ChessPiece):
     def __init__(self):
         ChessPiece.__init__(self)
         self.symbol = 'R'
-        print '>>> Build Rook piece'
 
     def check_attack(self, target):
         if self.x == target.x or self.y == target.y:
@@ -109,7 +108,6 @@ class Bishop(ChessPiece):
     def __init__(self):
         ChessPiece.__init__(self)
         self.symbol = 'B'
-        print '>>> Build Bishop piece'
 
     def check_attack(self, target):
         # Check for non-horizontal/vertical and linear movement
@@ -125,7 +123,6 @@ class Knight(ChessPiece):
     def __init__(self):
         ChessPiece.__init__(self)
         self.symbol = 'N'
-        print '>>> Build Knight piece'
 
     def check_attack(self, target):
         if abs(target.x-self.x) == 2 and abs(target.y-self.y) == 1:
