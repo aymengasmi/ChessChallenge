@@ -85,10 +85,8 @@ class Chess(object):
                 # move the piece in the chessboard
                 p.deplace_piece(s)
                 if chessboard.can_put_on(p):
-                    # Update chesseBoard
-                    chessboard.allocated(p)
                     # Check if all pieces are in Board
-                    _leng = len(chessboard.allocated_pieces)
+                    _leng = len(chessboard.allocated_pieces)+1
                     if _leng == len(self.pieces):
                         self.solutions += 1
 
@@ -97,14 +95,16 @@ class Chess(object):
                         # populate with pieces except in the board
                         if p in waiting_pieces:
                             waiting_pieces.remove(p)
+
+                        chessboard.allocated(p)
+
                         self.populate(waiting_pieces, chessboard)
 
                     # Remove the piece from the Chessboard
                     # and range to the next empty square
-                    chessboard.remove_piece(p)
+                        chessboard.remove_piece(p)
 
-                else:
-                    continue
+
 
 
 class Chessboard():
