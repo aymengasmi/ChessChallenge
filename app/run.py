@@ -1,10 +1,18 @@
 # -*- coding: utf-8 -*-
+# pylint: disable=C0103
 
+"""
+    The main that run the solutions
+"""
+# ///////////////////////////////////////////////////
+# Python packages
 import time
 import sys
 import argparse
 
-from chess.chess import Chess
+# ///////////////////////////////////////////////////
+# My modules
+from app.chess.chess import Chess
 
 
 parser = argparse.ArgumentParser(description='chess challenge')
@@ -20,7 +28,7 @@ args = parser.parse_args()
 
 if __name__ == "__main__":
     params = []
-    pieces = {'Queen': 0, 'King': 0, 'Bishop': 0,  'Rook': 0, 'Knight': 0}
+    pieces = {'Queen': 0, 'King': 0, 'Bishop': 0, 'Rook': 0, 'Knight': 0}
 
     if len(sys.argv) >= 2:
         print args
@@ -35,7 +43,7 @@ if __name__ == "__main__":
     else:
         print "No command line arguments"
         params = [7, 7]
-        pieces = {'Queen': 2, 'King': 2, 'Bishop': 2,  'Rook': 0, 'Knight': 1}
+        pieces = {'Queen': 2, 'King': 2, 'Bishop': 2, 'Rook': 0, 'Knight': 1}
 
     params.append(pieces)
 

@@ -15,12 +15,12 @@ from copy import copy
 
 # ///////////////////////////////////////////////////
 # My modules
-from piece import King
-from piece import Queen
-from piece import Rook
-from piece import Bishop
-from piece import Knight
-from piece import ChessPiece
+from app.chess.piece import King
+from app.chess.piece import Queen
+from app.chess.piece import Rook
+from app.chess.piece import Bishop
+from app.chess.piece import Knight
+from app.chess.piece import ChessPiece
 # ---------------------------------------------------
 
 # ///////////////////////////////////////////////////
@@ -29,18 +29,17 @@ from piece import ChessPiece
 class Chess(object):
     """ Chess class """
     def __init__(self, params):
-        self.chess_output = []
         self.solutions = 0
         self.width = params[0]
         self.height = params[1]
         self.dict_pieces = params[2]
         self.number_pieces = reduce(lambda x, y: x+y, params[2].values())
         # Create all pieces objects
-        self.pieces = self.__create_pieces(params[2])
+        self.pieces = self.create_pieces(params[2])
         self.pieces_types = [i.get_symbol() for i in self.pieces]
         self.chessboard = Chessboard(self.width, self.height)
 
-    def __create_pieces(self, pieces_dict):
+    def create_pieces(self, pieces_dict):
         """ Create pieces """
         kings_list = [King() for _ in xrange(pieces_dict['King'])]
         queens_list = [Queen() for _ in xrange(pieces_dict['Queen'])]
@@ -56,6 +55,7 @@ class Chess(object):
         return pieces
 
     def print_solution_chessboard(self):
+        """ print chess solution """
         pass
 
     def run_game(self):
@@ -84,13 +84,13 @@ class Chess(object):
 
         if chessboard.empty_squares:
             # Check all possible mouvments for a piece
-            for s in copy(chessboard.empty_squares):
+            for empty_square in copy(chessboard.empty_squares):
                 # move the piece in the chessboard
-                current_piece.deplace_piece(s)
+                current_piece.deplace_piece(empty_square)
                 if chessboard.can_put_on(current_piece):
                     # Check if all pieces are in Board
-                    current_piece.squares.append(s)
-                    current_piece.square = s
+                    current_piece.squares.append(empty_square)
+                    current_piece.square = empty_square
                     if not check_duplicate(current_piece, previous_piece):
                         _leng = len(chessboard.allocated_pieces)+1
                         if _leng == len(self.pieces):
@@ -104,7 +104,8 @@ class Chess(object):
 
                             chessboard.allocated(current_piece)
 
-                            self.populate(current_piece, remained_pieces, chessboard)
+                            self.populate(current_piece,
+                                          remained_pieces, chessboard)
                             # Remove the piece from the Chessboard
                             # and range to the next empty square
                             chessboard.remove_piece(current_piece)
@@ -113,20 +114,21 @@ class Chess(object):
             current_piece.square = None
 
 
-def check_duplicate(p1, p2):
-    if p1.symbol == p2.symbol and p1.square in p2.squares:
+def check_duplicate(piece1, piece2):
+    """ Check if the piece already allocated before  """
+    if piece1.symbol == piece2.symbol and piece1.square in piece2.squares:
         return True
     else:
         return False
 
 
-class Chessboard():
+class Chessboard(object):
     """
     The chessboard class, manages and saves pieces moves and positions
     """
 
     # ///////////////////////////////////////////////////
-    def __init__(self, x, y):
+    def __init__(self, width, height):
         """
         Attributes:
         `board`            -- All squares that formed the Chessboard.
@@ -134,7 +136,7 @@ class Chessboard():
         `allocated_pieces` -- The piece put on the ChessBoard.
         `empty_squares`    -- The current empty squares in the Chessboard
         """
-        list_of_board = list(product(range(1, x+1), range(1, y+1)))
+        list_of_board = list(product(range(1, width+1), range(1, height+1)))
         self.board = [Square(x[0], x[1]) for x in list_of_board]
 
         self.allocated_squares = list()
@@ -146,17 +148,17 @@ class Chessboard():
         Updates piece positions on the chessboard
         """
         # Allocated piece square in the board
-        for s in self.board:
-            if s.coordinates() == piece.pos():
-                self.allocated_squares.append(s)
-                self.empty_squares.remove(s)
-        # Allocated all square can be attacked
-        for square in copy(self.empty_squares):
-            if piece.check_attack(square):
-                # print "piece {0} can attack {1} >>>".
-                # format(piece.pos(),square.coordinates())
+        for square in self.board:
+            if square.coordinates() == piece.pos():
                 self.allocated_squares.append(square)
                 self.empty_squares.remove(square)
+        # Allocated all square can be attacked
+        for _square in copy(self.empty_squares):
+            if piece.check_attack(_square):
+                # print "piece {0} can attack {1} >>>".
+                # format(piece.pos(),square.coordinates())
+                self.allocated_squares.append(_square)
+                self.empty_squares.remove(_square)
 
     def allocated(self, piece):
         """
@@ -189,17 +191,20 @@ class Chessboard():
         return test
 
 
-class Square():
+class Square(object):
     """
     Represents a position on the Board
     """
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+    def __init__(self, x_cord, y_cord):
+        """  initiate the square"""
+        self.x_cord = x_cord
+        self.y_cord = y_cord
         self.is_allocated = None
 
     def coordinates(self):
-        return (self.x, self.y)
+        """ return coordinates of the square"""
+        return (self.x_cord, self.y_cord)
 
     def allocate(self, piece):
+        """ allocate square piece"""
         self.is_allocated = piece
